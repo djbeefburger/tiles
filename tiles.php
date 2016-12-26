@@ -1,6 +1,6 @@
 <?php
 
-class Tiles{
+class Tile{
   //type (social media, song, mix, etc)
   //image (png)
   //image watermark (png)
@@ -9,10 +9,37 @@ class Tiles{
   //text (html)
   //index (int)
   //position (float)
-  private function 
+  /*
+  <div class="tileClass" id="tileClass_$_id">
+    <div class="tileClass tileClassImage" id="tileClassImage_$id">
+      <img class="tileClass tileClassImage tileClassImagePath" id="tileClassImagePath_$id" src="$_imagePath" >
+    </div>
+    <div class="tileClass tileClassWatermark" id="tileClassWatermark_$id">
+      <img class="tileClass tileClassWatermark tileClassWatermarkPath" id="tileClassWatermarkPath_$id" src="$_watermarkPath" >
+    </div>
+    
+    <div class="tileClass tileClassUrl" id="tileClassUrl_$id">
+      <a href="$_url" target="$_urlTarget" class="tileClass tileClassUrl
+    </div>
+  </div>
+  private $_attributes=array();
+  
+  public function __construct($attributes){
+    $this->_attributes=$attributes;
+  }
+  
+  private function makeImg(){
+    
+  }
+  
+  private function makeA(){
+    
+  }
+  
+  private function make
   
   private function addHtmlTtag(&$html_str,$tag_str,$attributes=array()){
-    if(empty($html)) $html="</$tag>";
+    if(empty($html)) $html="<$tag />";//needs a case for null html, non null attributes
     else $html="<$tag" . $this->formatHtmlAttributeArray($attributes).">$html</$tag>";
     return $html;
   }
