@@ -10,9 +10,20 @@ class Tiles{
   //index (int)
   //position (float)
   
-  private function wrapHtml($str){
+  private function tagHtml(&$html,$tag){
+    $html="<$tag>$html</$tag>";
+    return $html;
+  }
+  
+  private function setId(&$html,$id){
     
   }
+  
+  private function setClass(&$html,$id){
+    
+  }
+  
+  
 
 }
 
