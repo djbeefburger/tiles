@@ -1,5 +1,17 @@
 <?php
 
+class TileSet extends Tile{
+  private $_tiles=array();
+  
+  public function __construc($config){
+    
+  }
+  
+  public function showTiles($options){
+    
+  }
+}
+
 class Tile{
   //type (social media, song, mix, etc)
   //image (png)
