@@ -11,14 +11,17 @@ class Tiles{
   //position (float)
   private function 
   
-  private function addHtmlTtag(&$html_str,$tag_str,$attribute_array=array()){
+  private function addHtmlTtag(&$html_str,$tag_str,$attributes=array()){
     if(empty($html)) $html="</$tag>";
-    elseif(empty($attribute))$html="<$tag>$html</$tag>";
-    elseif(is_array($attribute_mixed))
-    else $html="<$tag
+    else $html="<$tag" . $this->formatHtmlAttributeArray($attributes).">$html</$tag>";
     return $html;
   }
   
+  private function formatHtmlAttributeArray($arr){
+    $output="";
+    if(!empty($arr) and is_array($arr))foreach($arr as $attribute=>$value)$output.=$this->formatHtmlAttribute($attribute,$value);
+    return $output;
+  }
   
   private function formatHtmlAttribute($attribute,$value){
     return " $attribute" . '="' . $value . '"';
