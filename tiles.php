@@ -63,9 +63,23 @@ class Tile{
   
   private function getTileIdsFromDirectory(){
     $result=array();
+    $files=scandir($this->_tileDir,1);
+    if(!empty($files))
+       foreach($files as $k=>$v){
+          $f2=explode(".".$this->_tileFileExtension,str_replace($this->_tileFilenameBase,"",$v));
+          if(!empty($f2)){
+            $id_number=$f2[0];
+            if(strlen($this->_tileFilenameBase . $id_number . ".".$this->_tileFileExtension )!=strlen($v)) unset($files[$k]); 
+            else $files[$k]=$id_number;
+          }
+          else unset($files[$k]); 
+       }
+    else $files=array();
     //read all filenames in $_tileDir, filter for files with FilenameBase, extract numeric id from filename, append to array 
-    return $result;
+    return array_values($files);
   }
+      
+      
   
   private function writeTile(){
     //
