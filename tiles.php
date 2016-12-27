@@ -13,6 +13,9 @@ class TileSet extends Tile{
 }
 
 class Tile{
+  //Each Tile should have a corresponding xml document
+  
+  //
   //type (social media, song, mix, etc)
   //image (png)
   //image watermark (png)
@@ -33,12 +36,41 @@ class Tile{
     <div class="tileClass tileClassUrl" id="tileClassUrl_$id">
       <a href="$_url" target="$_urlTarget" class="tileClass tileClassUrl
     </div>
-  </div>
-  private $_attributes=array();
+  </div>*/
   
-  public function __construct($attributes){
-    $this->_attributes=$attributes;
+  
+  private 
+    $_tileDir,//the directory in which all tiles are stored, defaults to "xml/tiles"
+    $_attributes=array(),
+    ;
+  
+  public function __construct($config){
+    if(!empty($config['attributes']))$this->_attributes=$config['attributes'];
+    if(!empty(
   }
+  
+  private function setTileDir($str){
+    $this->_tileDir=$str;
+  }
+  
+  private function setTileFilenameBase($str="tile"){
+    $this->_tileFilenameBase=$str;
+  }
+  
+  private function setTileFileExtension($str="xml"){
+    $this->_tileFileExtension=$str;
+  }
+  
+  private function getTileIdsFromDirectory(){
+    $result=array();
+    //read all filenames in $_tileDir, filter for files with FilenameBase, extract numeric id from filename, append to array 
+    return $result;
+  }
+  
+  private function writeTile(){
+    //
+  }
+  
   
   private function makeImg(){
     
