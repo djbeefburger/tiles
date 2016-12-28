@@ -57,11 +57,12 @@ class Tile{
     $this->_tileFilenameBase=$str;
   }
   
-  private function setTileFileExtension($str="xml"){
+  private function setTileFileExtension($str="json"){
     $this->_tileFileExtension=$str;
   }
   
   private function getTileIdsFromDirectory(){
+    //expect files with format "{$this->_tileFilenameBase}INT.{$this->_tileFileExtension}"
     $result=array();
     $files=scandir($this->_tileDir,1);
     if(!empty($files))
@@ -82,7 +83,8 @@ class Tile{
       
   
   private function writeTile(){
-    //
+    if(empty($this->_id))$this->_id=time();
+    file_put_contents("{$this->_tileFileDir}/{$this->_tileFilenameBase}{$id}.{$this->_tileFileExtension}",json_encode($this->_attributes));
   }
   
   
