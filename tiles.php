@@ -1,18 +1,8 @@
 <?php
 
-class TileSet extends Tile{
-  private $_tiles=array();
-  
-  public function __construc($config){
-    
-  }
-  
-  public function showTiles($options){
-    
-  }
-}
 
-class Tile{
+
+class Tiles{
   //Each Tile should have a corresponding xml document
   
   //
@@ -40,13 +30,14 @@ class Tile{
   
   
   private 
-    $_tileDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite;
+    $_tileDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite,$_tileIds;
   
   public function __construct($config){
     $this->setTileDir($config['tileDir']);
     $this->setTileFilenameBase($config['tileFilenameBase']);
     $this->setTileFileExtension($config['tileFileExtension']);
     $this->setWriteToken($config['token']);
+    $this->_tileIds=$this->getTileIdsFromDirectory();
   }
   
   
@@ -87,8 +78,12 @@ class Tile{
   }
       
   public function getTile($id){
-    return (array)json_decode(file_get_contents($this->_tileDir.$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
+    if(in_array($id,$this->_tileIds))
+      return (array)json_decode(file_get_contents($this->_tileDir.$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
+    else return false;
   }
+  
+  pu
       
   public function getTiles(){
     $tileIds=getTileIdsFromDirectory();
