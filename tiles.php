@@ -40,14 +40,15 @@ class Tile{
   
   
   private 
-    $_tileDir,//the directory in which all tiles are stored, defaults to "xml/tiles"
-    $_attributes=array(),
-    ;
+    $_tileDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite;
   
   public function __construct($config){
-    if(!empty($config['attributes']))$this->_attributes=$config['attributes'];
-    if(!empty(
+    $this->setTileDir($config['tileDir']);
+    $this->setTileFilenameBase($config['tileFilenameBase']);
+    $this->setTileFileExtension($config['tileFileExtension']);
+    $this->setWriteToken($config['token']);
   }
+  
   
   private function setTileDir($str){
     $this->_tileDir=$str;
@@ -59,6 +60,11 @@ class Tile{
   
   private function setTileFileExtension($str="json"){
     $this->_tileFileExtension=$str;
+  }
+  
+  private function setWriteToken($token=""){
+    if($token=="kljasdfnlknKNKLjnkjdrfgnkunsdllukzsdf9sdifihasdhv&*h878biub")$this->_canWrite=true;
+    else $this->_canWrite=false;
   }
   
   private function getTileIdsFromDirectory(){
@@ -80,51 +86,29 @@ class Tile{
     return array_values($files);
   }
       
+  public function getTile($id){
+    return (array)json_decode(file_get_contents($this->_tileDir.$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
+  }
       
+  public function getTiles(){
+    $tileIds=getTileIdsFromDirectory();
+    foreach($tileIds as $id)$tiles[$id]=$this->getTile($id);
+    foreach($tiles as $id=>$tile)if(empty($tiles[$id]))unset($tiles[$id]);
+    return $tiles;
+  }
   
-  private function writeTile(){
+  private function writeTile($arr){
+    if($this->_canWrite){
+      file_put_contents("{$this->_tileFileDir}/{$this->_tileFilenameBase}{$id}.{$this->_tileFileExtension}",json_encode($arr));  
+    }else{
+      return false;
+    }
     if(empty($this->_id))$this->_id=time();
-    file_put_contents("{$this->_tileFileDir}/{$this->_tileFilenameBase}{$id}.{$this->_tileFileExtension}",json_encode($this->_attributes));
-  }
-  
-  
-  private function makeImg(){
     
   }
   
-  private function makeA(){
-    
-  }
   
-  private function make
-  
-  private function addHtmlTtag(&$html_str,$tag_str,$attributes=array()){
-    if(empty($html)) $html="<$tag />";//needs a case for null html, non null attributes
-    else $html="<$tag" . $this->formatHtmlAttributeArray($attributes).">$html</$tag>";
-    return $html;
-  }
-  
-  private function formatHtmlAttributeArray($arr){
-    $output="";
-    if(!empty($arr) and is_array($arr))foreach($arr as $attribute=>$value)$output.=$this->formatHtmlAttribute($attribute,$value);
-    return $output;
-  }
-  
-  private function formatHtmlAttribute($attribute,$value){
-    return " $attribute" . '="' . $value . '"';
-  }
-  
-  private function addHtmAttribute(&$html,$attribute,$value){
-    $position=strpos($html,">");
-    $part1=substr($html,0,$position-1);
-    $part2=substr($html,$position);
-    $html=$part1.$this->formatHtmlAttribute($attribute,$value).$part2;
-  }
-  
-  
-  private function addHtmlClass(&$html,$id){
-    
-  }
+
   
   
 
