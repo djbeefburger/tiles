@@ -3,6 +3,28 @@
 
 
 class Tiles{
+  /*
+  session_start();
+  $config['tiles']['tileDir']="/src/json/tiles";
+  $config['tiles']['tileFilenameBase']="tile";
+  $config['tiles']['tileFileExtension']="json";
+  
+  //this intends to be an easy way to toggle all writes on or off
+  $config['tiles']['blockWrites']=false;
+  
+  //hardcoded token! find that token and replace in code
+  $config['tiles']['token']="kljasdfnlknKNKLjnkjdrfgnkunsdllukzsdf9sdifihasdhv&*h878biub";
+  
+  //if(empty($_SESSION['tiles'])){
+    $t=new Tiles($config['tiles']);
+    $tiles=$t->getTiles();
+    echo"<pre>".print_r($tiles,true)."</pre>";
+    $t->writeTile(array('doug'=>'lazy','happy'=>'days'));
+    $t->writeTile(array('doug'=>'lazy','happy'=>'days'));
+    
+  
+  
+  
   //Each Tile should have a corresponding xml document
   
   //
@@ -30,16 +52,16 @@ class Tiles{
   
   
   private 
-    $_tileDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite,$_tileIds;
+    $_tileDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite,$_tileIds,$_blockWrites;
   
   public function __construct($config){
     $this->setTileDir($config['tileDir']);
     $this->setTileFilenameBase($config['tileFilenameBase']);
     $this->setTileFileExtension($config['tileFileExtension']);
+    $this->setBlockWrites($config['blockWrites']);
     $this->setWriteToken($config['token']);
     $this->_tileIds=$this->getTileIdsFromDirectory();
   }
-  
   
   private function setTileDir($str){
     $this->_tileDir=$str;
@@ -53,8 +75,13 @@ class Tiles{
     $this->_tileFileExtension=$str;
   }
   
+  private function setBlockWrites($boo){
+    if($boo)$this->_setBlockWrites=true;
+    else $this->_setBlockWrites=false;
+  }
+    
   private function setWriteToken($token=""){
-    if($token=="kljasdfnlknKNKLjnkjdrfgnkunsdllukzsdf9sdifihasdhv&*h878biub")$this->_canWrite=true;
+    if($this->_blockWrites&&$token=="kljasdfnlknKNKLjnkjdrfgnkunsdllukzsdf9sdifihasdhv&*h878biub")$this->_canWrite=true;
     else $this->_canWrite=false;
   }
   
@@ -83,7 +110,15 @@ class Tiles{
     else return false;
   }
   
-  pu
+  public function delTile($id){
+    if($this->_canWrite){
+      $r=unlink("{$this->_tileFileDir}/{$this->_tileFilenameBase}{$arr['id']}.{$this->_tileFileExtension}");
+      $this->_tileIds=$this->getTileIdsFromDirectory();
+      return $r;
+    }else{
+      return false;
+    }
+  }
       
   public function getTiles(){
     $tileIds=getTileIdsFromDirectory();
@@ -94,11 +129,14 @@ class Tiles{
   
   private function writeTile($arr){
     if($this->_canWrite){
-      file_put_contents("{$this->_tileFileDir}/{$this->_tileFilenameBase}{$id}.{$this->_tileFileExtension}",json_encode($arr));  
+      if(empty($arr['id']))$arr['id']=time();
+      $r= file_put_contents("{$this->_tileFileDir}/{$this->_tileFilenameBase}{$arr['id']}.{$this->_tileFileExtension}",json_encode($arr));  
+      $this->_tileIds=$this->getTileIdsFromDirectory();
+      return $r;
     }else{
       return false;
     }
-    if(empty($this->_id))$this->_id=time();
+    
     
   }
   
