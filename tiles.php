@@ -18,11 +18,15 @@ class Tiles{
   //if(empty($_SESSION['tiles'])){
     $t=new Tiles($config['tiles']);
     $tiles=$t->getTiles();
-    echo"<pre>".print_r($tiles,true)."</pre>";
+    echo"<h1>hh</h1><pre>".print_r($tiles,true)."</pre>";
     $t->writeTile(array('doug'=>'lazy','happy'=>'days'));
-    $t->writeTile(array('doug'=>'lazy','happy'=>'days'));
-    
-  
+    $t->writeTile(array('id'=>100,'pug'=>'crazy','flappy'=>'days'));
+    $tiles=$t->getTiles();
+    echo"<h1>vv</h1><pre>".print_r($tiles,true)."</pre>";
+    echo"<h1>vv</h1><pre>".print_r($t->getTile(100)),true)."</pre>";
+    $t->delTile(100);
+    $tiles=$t->getTiles();
+  echo"<h1>vv</h1><pre>".print_r($tiles,true)."</pre>";
   
   
   //Each Tile should have a corresponding xml document
