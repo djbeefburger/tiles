@@ -53,7 +53,7 @@ class Tiles{
       <a href="$_url" target="$_urlTarget" class="tileClass tileClassUrl
     </div>
   </div>*/
-  
+
   
   private 
     $_tileDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite,$_tileIds,$_blockWrites;
@@ -80,12 +80,12 @@ class Tiles{
   }
   
   private function setBlockWrites($boo){
-    if($boo)$this->_setBlockWrites=true;
-    else $this->_setBlockWrites=false;
+    if($boo)$this->_blockWrites=true;
+    else $this->_blockWrites=false;
   }
     
   private function setWriteToken($token=""){
-    if($this->_blockWrites&&$token=="kljasdfnlknKNKLjnkjdrfgnkunsdllukzsdf9sdifihasdhv&*h878biub")$this->_canWrite=true;
+    if(!$this->_blockWrites&&$token=="kljasdfnlknKNKLjnkjdrfgnkunsdllukzsdf9sdifihasdhv&*h878biub")$this->_canWrite=true;
     else $this->_canWrite=false;
   }
   
@@ -93,9 +93,10 @@ class Tiles{
     //expect files with format "{$this->_tileFilenameBase}INT.{$this->_tileFileExtension}"
     $result=array();
     $files=scandir($this->_tileDir,1);
-    if(!empty($files))
+	//die($this->_tileDir.print_r( $files,true));
+    if(!empty($files)){
        foreach($files as $k=>$v){
-          $f2=explode(".".$this->_tileFileExtension,str_replace($this->_tileFilenameBase,"",$v));
+          $f2=explode(".{$this->_tileFileExtension}",str_replace($this->_tileFilenameBase,"",$v));
           if(!empty($f2)){
             $id_number=$f2[0];
             if(strlen($this->_tileFilenameBase . $id_number . ".".$this->_tileFileExtension )!=strlen($v)) unset($files[$k]); 
@@ -103,20 +104,23 @@ class Tiles{
           }
           else unset($files[$k]); 
        }
-    else $files=array();
+    }else $files=array();
     //read all filenames in $_tileDir, filter for files with FilenameBase, extract numeric id from filename, append to array 
+	//die($this->_tileDir.print_r( $files,true));
     return array_values($files);
   }
       
   public function getTile($id){
-    if(in_array($id,$this->_tileIds))
-      return (array)json_decode(file_get_contents($this->_tileDir.$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
-    else return false;
+    if(in_array($id,$this->_tileIds)){
+      return (array)json_decode(file_get_contents($this->_tileDir."/".$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
+    }else return false;
   }
   
   public function delTile($id){
     if($this->_canWrite){
-      $r=unlink("{$this->_tileFileDir}/{$this->_tileFilenameBase}{$arr['id']}.{$this->_tileFileExtension}");
+		$filename="{$this->_tileDir}/{$this->_tileFilenameBase}{$id}.{$this->_tileFileExtension}";
+		//die($filename);
+      $r=unlink($filename);
       $this->_tileIds=$this->getTileIdsFromDirectory();
       return $r;
     }else{
@@ -125,30 +129,24 @@ class Tiles{
   }
       
   public function getTiles(){
-    $tileIds=getTileIdsFromDirectory();
-    foreach($tileIds as $id)$tiles[$id]=$this->getTile($id);
+    $this->_tileIds=$this->getTileIdsFromDirectory();
+    foreach($this->_tileIds as $id)$tiles[$id]=$this->getTile($id);
     foreach($tiles as $id=>$tile)if(empty($tiles[$id]))unset($tiles[$id]);
     return $tiles;
   }
   
-  private function writeTile($arr){
+  public function writeTile($arr){
     if($this->_canWrite){
-      if(empty($arr['id']))$arr['id']=time();
-      $r= file_put_contents("{$this->_tileFileDir}/{$this->_tileFilenameBase}{$arr['id']}.{$this->_tileFileExtension}",json_encode($arr));  
-      $this->_tileIds=$this->getTileIdsFromDirectory();
+	  if(empty($arr['id']))$arr['id']=time();
+	  $filepath="{$this->_tileDir}/{$this->_tileFilenameBase}{$arr['id']}.{$this->_tileFileExtension}";
+      $r= file_put_contents($filepath,json_encode($arr));  
+	  $this->_tileIds=$this->getTileIdsFromDirectory();
       return $r;
     }else{
       return false;
     }
-    
-    
   }
   
-  
-
-  
-  
-
 }
 
 ?>
