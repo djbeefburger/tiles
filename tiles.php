@@ -29,7 +29,7 @@ class Tiles{
  
   
   private 
-    $_tileDataDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite,$_tileIds,$_blockWrites;
+    $_tileDataDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite,$_tileIds,$_blockWrites,$_tags;
   
   public function __construct($config){
     $this->setTileDataDir($config['tileDataDir']);
@@ -59,7 +59,7 @@ class Tiles{
   }
     
   private function setWriteToken($token=""){
-    if(!$this->_blockWrites&&$token=="l;kasdfnasdf098asd098jaspjdv0asu-asdfv-asdvja-sjv-asd-0as9djcoq3i4jrl2oi8a98s98(*7978")$this->_canWrite=true;
+    if(!$this->_blockWrites&&$token=="")$this->_canWrite=true;
     else $this->_canWrite=false;
   }
   
@@ -87,7 +87,12 @@ class Tiles{
   public function getTile($id){
     if(in_array($id,$this->_tileIds)){
 		//die('FOUNDIT');
-      return (array)json_decode(file_get_contents($this->_tileDataDir."/".$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
+      $tile = (array)json_decode(file_get_contents($this->_tileDataDir."/".$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
+      if(!empty($tile['tags'])){
+        $tags=explode(','$tile['tags']);
+        foreach($tags as $tag)$this->_tags[$tag][$id]=1;
+      }
+      return $tile;
     }else return false;
   }
   
@@ -97,17 +102,26 @@ class Tiles{
 		//die($filename);
       $r=unlink($filename);
       $this->_tileIds=$this->getTileIdsFromDirectory();
+      if($r)foreach($this->_tags as $t=>$i_array)if(isset($i_array[$id]))unset($this->_tags[$t][$id]);
       return $r;
     }else{
       return false;
     }
   }
       
-  public function getTiles(){
-    $this->_tileIds=$this->getTileIdsFromDirectory();
-    foreach($this->_tileIds as $id)$tiles[$id]=$this->getTile($id);
-    foreach($tiles as $id=>$tile)if(empty($tiles[$id]))unset($tiles[$id]);
-    return $tiles;
+  public function getTiles($tag=""){
+    if(empty($tag)||empty($this->_tags[$tag])){
+      $this->_tileIds=$this->getTileIdsFromDirectory();
+      foreach($this->_tileIds as $id)$tiles[$id]=$this->getTile($id);
+      foreach($tiles as $id=>$tile)if(empty($tiles[$id]))unset($tiles[$id]);
+      return $tiles;
+    }
+    else{
+      $filtered_ids=array_keys($this->_tags[$tag])
+      foreach($filtered_ids as $id)$tiles[$id]=$this->getTile($id);
+      foreach($tiles as $id=>$tile)if(empty($tiles[$id]))unset($tiles[$id]);
+      return $tiles;
+    }
   }
   
   public function writeTile($arr){
@@ -122,6 +136,12 @@ class Tiles{
       return false;
     }
   }
+	
+  public function getTags(){
+    $this->getTiles();
+    return $this->_tags;
+  }
+
   
 }
 
