@@ -1,11 +1,8 @@
 <?php
 
-
-
 class Tiles{
-  /*
-  session_start();
-  $config['tiles']['tileDir']="/src/json/tiles";
+/*  session_start();
+  $config['tiles']['tileDataDir']="src/json/tiles";
   $config['tiles']['tileFilenameBase']="tile";
   $config['tiles']['tileFileExtension']="json";
   
@@ -15,60 +12,37 @@ class Tiles{
   //hardcoded token! find that token and replace in code
   $config['tiles']['token']="kljasdfnlknKNKLjnkjdrfgnkunsdllukzsdf9sdifihasdhv&*h878biub";
   
-  //if(empty($_SESSION['tiles'])){
-    $t=new Tiles($config['tiles']);
-    $tiles=$t->getTiles();
-    echo"<h1>hh</h1><pre>".print_r($tiles,true)."</pre>";
-    $t->writeTile(array('doug'=>'lazy','happy'=>'days'));
-    $t->writeTile(array('id'=>100,'pug'=>'crazy','flappy'=>'days'));
-    $tiles=$t->getTiles();
-    echo"<h1>vv</h1><pre>".print_r($tiles,true)."</pre>";
-    echo"<h1>vv</h1><pre>".print_r($t->getTile(100)),true)."</pre>";
-    $t->delTile(100);
-    $tiles=$t->getTiles();
+  $t=new Tiles($config['tiles']);
+  $tiles=$t->getTiles();
+  echo"<h1>nocachepls</h1>".time()."<pre>".print_r($tiles,true)."</pre>";
+  
+  $t->writeTile(array('doug'=>'lazy','happy'=>'days'));
+  $tiles=$t->getTiles();
+  echo"<h1>mh</h1><pre>".print_r($tiles,true)."</pre>";
+  $t->writeTile(array('id'=>100,'pug'=>'crazy','flappy'=>'days'));
+  $tiles=$t->getTiles();
   echo"<h1>vv</h1><pre>".print_r($tiles,true)."</pre>";
-  
-  
-  //Each Tile should have a corresponding xml document
-  
-  //
-  //type (social media, song, mix, etc)
-  //image (png)
-  //image watermark (png)
-  //url (rel?)
-  //target (if not local url,_blank)
-  //text (html)
-  //index (int)
-  //position (float)
-  /*
-  <div class="tileClass" id="tileClass_$_id">
-    <div class="tileClass tileClassImage" id="tileClassImage_$id">
-      <img class="tileClass tileClassImage tileClassImagePath" id="tileClassImagePath_$id" src="$_imagePath" >
-    </div>
-    <div class="tileClass tileClassWatermark" id="tileClassWatermark_$id">
-      <img class="tileClass tileClassWatermark tileClassWatermarkPath" id="tileClassWatermarkPath_$id" src="$_watermarkPath" >
-    </div>
-    
-    <div class="tileClass tileClassUrl" id="tileClassUrl_$id">
-      <a href="$_url" target="$_urlTarget" class="tileClass tileClassUrl
-    </div>
-  </div>*/
-
+  echo"<h1>vv</h1><pre>".print_r($t->getTile(100),true)."</pre>";
+  $t->delTile(100);
+  $tiles=$t->getTiles();
+  echo"<h1>vv</h1><pre>".print_r($tiles,true)."</pre>";*/
+ 
   
   private 
-    $_tileDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite,$_tileIds,$_blockWrites;
+    $_tileDataDir,$_tileFilenameBase,$_tileFileExtension,$_canWrite,$_tileIds,$_blockWrites;
   
   public function __construct($config){
-    $this->setTileDir($config['tileDir']);
+    $this->setTileDataDir($config['tileDataDir']);
     $this->setTileFilenameBase($config['tileFilenameBase']);
     $this->setTileFileExtension($config['tileFileExtension']);
     $this->setBlockWrites($config['blockWrites']);
-    $this->setWriteToken($config['token']);
+    if(!empty($config['token']))$this->setWriteToken($config['token']);
     $this->_tileIds=$this->getTileIdsFromDirectory();
   }
   
-  private function setTileDir($str){
-    $this->_tileDir=$str;
+  private function setTileDataDir($str){
+    $this->_tileDataDir=$str;
+	//die($this->_tileDataDir);
   }
   
   private function setTileFilenameBase($str="tile"){
@@ -85,15 +59,15 @@ class Tiles{
   }
     
   private function setWriteToken($token=""){
-    if(!$this->_blockWrites&&$token=="kljasdfnlknKNKLjnkjdrfgnkunsdllukzsdf9sdifihasdhv&*h878biub")$this->_canWrite=true;
+    if(!$this->_blockWrites&&$token=="l;kasdfnasdf098asd098jaspjdv0asu-asdfv-asdvja-sjv-asd-0as9djcoq3i4jrl2oi8a98s98(*7978")$this->_canWrite=true;
     else $this->_canWrite=false;
   }
   
   private function getTileIdsFromDirectory(){
     //expect files with format "{$this->_tileFilenameBase}INT.{$this->_tileFileExtension}"
     $result=array();
-    $files=scandir($this->_tileDir,1);
-	//die($this->_tileDir.print_r( $files,true));
+    $files=scandir($this->_tileDataDir,1);
+	//die($this->_tileDataDir.print_r( $files,true));
     if(!empty($files)){
        foreach($files as $k=>$v){
           $f2=explode(".{$this->_tileFileExtension}",str_replace($this->_tileFilenameBase,"",$v));
@@ -105,20 +79,21 @@ class Tiles{
           else unset($files[$k]); 
        }
     }else $files=array();
-    //read all filenames in $_tileDir, filter for files with FilenameBase, extract numeric id from filename, append to array 
-	//die($this->_tileDir.print_r( $files,true));
+    //read all filenames in $_tileDataDir, filter for files with FilenameBase, extract numeric id from filename, append to array 
+	//die($this->_tileDataDir.print_r( $files,true));
     return array_values($files);
   }
       
   public function getTile($id){
     if(in_array($id,$this->_tileIds)){
-      return (array)json_decode(file_get_contents($this->_tileDir."/".$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
+		//die('FOUNDIT');
+      return (array)json_decode(file_get_contents($this->_tileDataDir."/".$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
     }else return false;
   }
   
   public function delTile($id){
     if($this->_canWrite){
-		$filename="{$this->_tileDir}/{$this->_tileFilenameBase}{$id}.{$this->_tileFileExtension}";
+		$filename="{$this->_tileDataDir}/{$this->_tileFilenameBase}{$id}.{$this->_tileFileExtension}";
 		//die($filename);
       $r=unlink($filename);
       $this->_tileIds=$this->getTileIdsFromDirectory();
@@ -136,17 +111,19 @@ class Tiles{
   }
   
   public function writeTile($arr){
+	//returns the new d or false
     if($this->_canWrite){
 	  if(empty($arr['id']))$arr['id']=time();
-	  $filepath="{$this->_tileDir}/{$this->_tileFilenameBase}{$arr['id']}.{$this->_tileFileExtension}";
+	  $filepath="{$this->_tileDataDir}/{$this->_tileFilenameBase}{$arr['id']}.{$this->_tileFileExtension}";
       $r= file_put_contents($filepath,json_encode($arr));  
 	  $this->_tileIds=$this->getTileIdsFromDirectory();
-      return $r;
+      return ($r?$arr['id']:false);
     }else{
       return false;
     }
   }
   
 }
+
 
 ?>
