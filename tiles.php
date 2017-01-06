@@ -89,7 +89,7 @@ class Tiles{
 		//die('FOUNDIT');
       $tile = (array)json_decode(file_get_contents($this->_tileDataDir."/".$this->_tileFilenameBase.$id.".".$this->_tileFileExtension));
       if(!empty($tile['tags'])){
-        $tags=explode(','$tile['tags']);
+        $tags=explode(',',$tile['tags']);
         foreach($tags as $tag)$this->_tags[$tag][$id]=1;
       }
       return $tile;
